@@ -20,9 +20,9 @@ MAX_FRQ = Gauge('ups_max_frq', 'Maximum UPS input frequency')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Prometheus exporter for rack UPS")
-    parser.add_argument('-p', '--port', default=9825, help='Port to listen on for the exporter')
-    parser.add_argument('-d', '--device', default='/dev/ttyUSB0', help='Serial USB device to probe')
-    parser.add_argument('-b', '--baud', default=2400, help='Baud rate for the serial USB device')
+    parser.add_argument('-p', '--port', type=int, default=9825, help='Port to listen on for the exporter')
+    parser.add_argument('-d', '--device', type=str, default='/dev/ttyUSB0', help='Serial USB device to probe')
+    parser.add_argument('-b', '--baud', type=int, default=2400, help='Baud rate for the serial USB device')
     parser.add_argument('-v', '--verbose', default=0, action='count')
     return parser.parse_args()
 
