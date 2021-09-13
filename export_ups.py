@@ -27,15 +27,15 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_cmd(cmd):
+def run_cmd(cmd, port):
     port.write(cmd + b'\r')
     ret = b''
     while not len(ret) or ret[-1:] != b'\r':
         ret += port.read(1)
     return ret
 
-def get_raw_state():
-    data = run_cmd(b'D')
+def get_raw_state(port):
+    data = run_cmd(b'D', port)
     in_volts = float(data[2:7])
     out_volts = float(data[8:13])
     load = float(data[14:17]) / 100
@@ -44,8 +44,8 @@ def get_raw_state():
     run_time = float(data[38:41]) * 60
     return in_volts, out_volts, load, battery, frequency, run_time
 
-def get_limits():
-    data = run_cmd(b'P2')[1:].strip().split(b',')
+def get_limits(port):
+    data = run_cmd(b'P2', port)[1:].strip().split(b',')
     max_va = int(data[0])
     max_w = int(data[1])
     nom_v = int(data[2])
@@ -53,10 +53,10 @@ def get_limits():
     max_frq = int(data[4])
     return max_va, max_w, nom_v, min_frq, max_frq
 
-def update_state():
+def update_state(port):
     try:
-        in_volts, out_volts, load, battery, frequency, run_time = get_raw_state()
-        max_va, max_w, nom_v, min_frq, max_frq = get_limits()
+        in_volts, out_volts, load, battery, frequency, run_time = get_raw_state(port)
+        max_va, max_w, nom_v, min_frq, max_frq = get_limits(port)
         if args.verbose > 0:
             print('state: ', in_volts, out_volts, load, battery, frequency, run_time)
             print('limits: ', max_va, max_w, nom_v, min_frq, max_frq)
@@ -85,10 +85,10 @@ def stop_handler(sig, frame):
 
 if __name__ == '__main__':
     args = parse_args()
-    port = serial.Serial(args.device, baudrate=args.baud)
     start_http_server(args.port)
     signal.signal(signal.SIGINT, stop_handler)
     while running:
-        update_state()
+        with serial.Serial(args.device, baudrate=args.baud) as port:
+            update_state(port)
         time.sleep(5)
 
