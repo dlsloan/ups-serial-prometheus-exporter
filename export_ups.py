@@ -54,23 +54,26 @@ def get_limits():
     return max_va, max_w, nom_v, min_frq, max_frq
 
 def update_state():
-    in_volts, out_volts, load, battery, frequency, run_time = get_raw_state()
-    max_va, max_w, nom_v, min_frq, max_frq = get_limits()
-    if args.verbose > 0:
-        print('state: ', in_volts, out_volts, load, battery, frequency, run_time)
-        print('limits: ', max_va, max_w, nom_v, min_frq, max_frq)
-    IN_VOLTS.set(in_volts)
-    OUT_VOLTS.set(out_volts)
-    LOAD.set(load)
-    LOAD_W.set(load * max_w)
-    BATTERY.set(battery)
-    FREQUENCY.set(frequency)
-    BATTERY_RUNTIME.set(run_time)
-    RATED_VA.set(max_va)
-    RATED_W.set(max_w)
-    NOM_V.set(nom_v)
-    MIN_FRQ.set(min_frq)
-    MAX_FRQ.set(max_frq)
+    try:
+        in_volts, out_volts, load, battery, frequency, run_time = get_raw_state()
+        max_va, max_w, nom_v, min_frq, max_frq = get_limits()
+        if args.verbose > 0:
+            print('state: ', in_volts, out_volts, load, battery, frequency, run_time)
+            print('limits: ', max_va, max_w, nom_v, min_frq, max_frq)
+        IN_VOLTS.set(in_volts)
+        OUT_VOLTS.set(out_volts)
+        LOAD.set(load)
+        LOAD_W.set(load * max_w)
+        BATTERY.set(battery)
+        FREQUENCY.set(frequency)
+        BATTERY_RUNTIME.set(run_time)
+        RATED_VA.set(max_va)
+        RATED_W.set(max_w)
+        NOM_V.set(nom_v)
+        MIN_FRQ.set(min_frq)
+        MAX_FRQ.set(max_frq)
+    except Exception as e:
+        print(str(e))
 
 running = True
 
