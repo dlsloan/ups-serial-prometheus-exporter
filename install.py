@@ -1,6 +1,8 @@
 #!/bin/bash
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-EXEC_PATH="$SCRIPT_PATH/export_ups.py"
+EXEC_PATH="$SCRIPT_PATH/ups-export.py"
+
+set -e
 
 cat > /etc/systemd/system/ups-exporter.service <<- EOM
 [Unit]
@@ -18,6 +20,7 @@ ExecStart=/usr/bin/env python3 $EXEC_PATH
 WantedBy=multi-user.target
 EOM
 
+apt install -y libhidapi-dev libhidapi-hidraw0
 apt install -y python3-pip
 pip3 install -r "$SCRIPT_PATH/requirements.txt"
 systemctl daemon-reload
